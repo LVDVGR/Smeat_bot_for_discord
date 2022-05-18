@@ -53,9 +53,21 @@ async def leave(ctx):
     voice = discord.utils.get(bot.voice_clients, guild = server)
 
     if voice is None:
-        await ctx.channel.send(f'{ctx.author.mention}, меня тут и не было, долбаёб!')
+        await ctx.channel.send(f'{ctx.author.mention}, меня тут и не было!')
     else:
         await voice.disconnect()
+
+@bot.command()
+async def stoping(ctx):
+    global server
+    server = ctx.guild
+    voice = discord.utils.get(bot.voice_clients, guild = server)
+
+    if voice.is_playing():
+        await voice.pause()
+    else:
+        await ctx.channel.send(f'{ctx.author.mention}, уже остановлено.')
+
 
 
 
