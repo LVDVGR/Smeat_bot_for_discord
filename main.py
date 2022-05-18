@@ -1,5 +1,6 @@
 import audioop
-
+import json
+import requests
 import discord
 from discord.ext import commands
 from config import settings
@@ -94,6 +95,16 @@ async def volume(ctx, vol):
         await ctx.send("Я не нахожусь в войс канале.")
 
 
+@bot.command()
+async def show(ctx, search):
+    new_search = str(search)
+    url = 'https://some-random-api.ml/img/' + search
+    response = requests.get(url)
+    json_data = json.loads(response.text)
+
+    embed = discord.Embed(color = 0xff9900, title = f'Random {new_search}')
+    embed.set_image(url = json_data['link'])
+    await ctx.send(embed = embed)
 
 
 bot.run(settings['token'])
