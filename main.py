@@ -68,6 +68,18 @@ async def stoping(ctx):
     else:
         await ctx.channel.send(f'{ctx.author.mention}, уже остановлено.')
 
+@bot.command()
+async def resume(ctx):
+    global server
+    server = ctx.guild
+    voice = discord.utils.get(bot.voice_clients, guild = server)
+
+    if voice.is_paused():
+        await voice.resume()
+    else:
+        await ctx.channel.send(f'{ctx.author.mention}, мелодия уже на паузе.')
+
+print()
 
 
 
