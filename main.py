@@ -15,10 +15,6 @@ bot = commands.Bot(command_prefix = settings['prefix'])
 
 server = None
 
-def recharge(music):
-    music = False
-    return music
-
 @bot.command()
 async def hello(ctx):
     author = ctx.message.author
@@ -68,8 +64,9 @@ async def stoping(ctx):
     else:
         await ctx.channel.send(f'{ctx.author.mention}, уже остановлено.')
 
+
 @bot.command()
-async def resume(ctx):
+async def stoping(ctx):
     global server
     server = ctx.guild
     voice = discord.utils.get(bot.voice_clients, guild = server)
@@ -77,11 +74,7 @@ async def resume(ctx):
     if voice.is_paused():
         await voice.resume()
     else:
-        await ctx.channel.send(f'{ctx.author.mention}, мелодия уже на паузе.')
-
-print()
-
-
+        await ctx.channel.send(f'{ctx.author.mention}, уже остановлено.')
 
 
 
