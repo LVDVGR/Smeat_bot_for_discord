@@ -54,7 +54,7 @@ async def leave(ctx):
         await voice.disconnect()
 
 @bot.command()
-async def stoping(ctx):
+async def stop(ctx):
     global server
     server = ctx.guild
     voice = discord.utils.get(bot.voice_clients, guild = server)
@@ -66,7 +66,7 @@ async def stoping(ctx):
 
 
 @bot.command()
-async def stoping(ctx):
+async def resume(ctx):
     global server
     server = ctx.guild
     voice = discord.utils.get(bot.voice_clients, guild = server)
@@ -78,6 +78,20 @@ async def stoping(ctx):
 
 
 
+@bot.command()
+async def volume(ctx, vol):
+    voice = discord.utils.get(bot.voice_clients, guild=ctx.guild)
+    channel = ctx.author.voice.channel
+    vol_new = int(vol)
+    if voice and voice.is_connected():
+        if 1 <= vol_new <= 200:
+            voice.source = discord.PCMVolumeTransformer(
+                voice.source, vol_new / 100)
+            await ctx.send(f"Громкость увеличена в {vol_new / 100}.")
+        else:
+            await ctx.send("Недопустимый диапазон значений.")
+    else:
+        await ctx.send("Я не нахожусь в войс канале.")
 
 
 
