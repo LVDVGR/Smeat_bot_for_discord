@@ -121,6 +121,23 @@ async def здфн(ctx, url):
 
 
 
+#-----------------------------------------------recharge------------------------------------------------------
+@bot.command()
+async def recharge(ctx):
+    global server
+    server = ctx.guild
+    voice = discord.utils.get(bot.voice_clients, guild=server)
+
+    if voice is None:
+        await ctx.channel.send(f'{ctx.author.mention}, меня тут и не было!')
+    else:
+        await voice.disconnect()
+
+    await ctx.message.author.voice.channel.connect()
+#-------------------------------------------------------------------------------------------------------------
+
+
+
 
 #-----------------------------------------------add_song------------------------------------------------------
 @bot.command()
