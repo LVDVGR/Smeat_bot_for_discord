@@ -8,6 +8,9 @@ from hello import hello_phrases, shift_alt_phrase
 import random
 from youtube_dl import YoutubeDL
 import time
+from asyncio import sleep
+from Templates import *
+
 
 FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
 YDL_OPTIONS = {'format': 'worstaudio/best', 'noplaylist': 'False', 'simulate': 'True',
@@ -15,7 +18,7 @@ YDL_OPTIONS = {'format': 'worstaudio/best', 'noplaylist': 'False', 'simulate': '
 bot = commands.Bot(command_prefix = settings['prefix'])
 
 server = None
-music_list = []
+musical_queue = []
 
 
 
@@ -53,11 +56,9 @@ async def руддщ(ctx):
 
 
 #-----------------------------------------------------------play---------------------------------------
-@bot.command()
-async def play(ctx, url):
-    vc = await ctx.message.author.voice.channel.connect()
-    voice = discord.utils.get(bot.voice_clients, guild=server)
 
+
+def with_youtube(url):
     with YoutubeDL(YDL_OPTIONS) as ydl:
 
         if 'https://' in url:
@@ -66,11 +67,75 @@ async def play(ctx, url):
             info = ydl.extract_info(f'ytsearch: {url} ', download=False)['entrise'][0]
 
     url = info['formats'][0]['url']
-    #if(voice.is_playing):
-     #   music_list.append()
-    vc.play(discord.FFmpegPCMAudio(executable="ffmpeg\\ffmpeg.exe", source=url, **FFMPEG_OPTIONS))
-#----------------------------------------------------------------------------------------------------------
+    return url
 
+
+def play_music(ctx, url):
+    url = with_youtube(url)
+    vc.play(discord.FFmpegPCMAudio(executable="ffmpeg\\ffmpeg.exe", source=url, **FFMPEG_OPTIONS))
+
+
+@bot.command()
+async def play(ctx, url):
+    global vc
+    musical_queue.append(url)
+    print(musical_queue)
+    try:
+        voice_channel = ctx.message.author.voice.channel
+        vc = await voice_channel.connect()
+    except:
+        print('Уже подключен или не удалось подключиться')
+
+    if vc.is_playing():
+        while vc.is_playing():
+            await sleep(1)
+        play_music(ctx, musical_queue[0])
+        musical_queue.pop(0)
+    else:
+        play_music(ctx, musical_queue[0])
+        musical_queue.pop(0)
+
+@bot.command()
+async def здфн(ctx, url):
+    global vc
+    musical_queue.append(url)
+    print(musical_queue)
+    try:
+        voice_channel = ctx.message.author.voice.channel
+        vc = await voice_channel.connect()
+    except:
+        print('Уже подключен или не удалось подключиться')
+
+    if vc.is_playing():
+        while vc.is_playing():
+            await sleep(1)
+        play_music(ctx, musical_queue[0])
+        musical_queue.pop(0)
+        print(musical_queue)
+    else:
+        play_music(ctx, musical_queue[0])
+        musical_queue.pop(0)
+        print(musical_queue)
+#------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+#-----------------------------------------------add_song------------------------------------------------------
+@bot.command()
+async def add_playlist1(ctx, url):
+    try:
+        new_song = with_youtube(url)
+        playlist1.append(new_song)
+        await ctx.channel.send(f'Трек добавлен.')
+        print(playlist1)
+
+    except:
+
+        await ctx.channel.send(f'{ctx.author.mention}, плейлист не найден!')
+        await ctx.channel.send(f'Есть вероятность, что название плейлиста было написано не верно.')
+#-------------------------------------------------------------------------------------------------------------
 
 
 
@@ -78,6 +143,18 @@ async def play(ctx, url):
 #---------------------------------------------------leave-----------------------------------------------------
 @bot.command()
 async def leave(ctx):
+    global server
+    server = ctx.guild
+    voice = discord.utils.get(bot.voice_clients, guild = server)
+
+    if voice is None:
+        await ctx.channel.send(f'{ctx.author.mention}, меня тут и не было!')
+    else:
+        await voice.disconnect()
+
+
+@bot.command()
+async def дуфму(ctx):
     global server
     server = ctx.guild
     voice = discord.utils.get(bot.voice_clients, guild = server)
@@ -152,6 +229,8 @@ async def volume(ctx, vol):
 #----------------------------------------------------------------------------------------------------------
 
 
+
+
 #----------------------------------------------show---------------------------------------------------
 @bot.command()
 async def show(ctx, search):
@@ -170,4 +249,3 @@ async def show(ctx, search):
 
 
 bot.run(settings['token'])
-
