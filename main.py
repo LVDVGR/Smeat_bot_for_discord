@@ -4,11 +4,12 @@ import requests
 import discord
 from discord.ext import commands
 from config import settings
-from hello import hello_phrases, shift_alt_phrase
+from hello import hello_phrases, shift_alt_phrase, get_help_txt
 import random
 from youtube_dl import YoutubeDL
 import time
 from asyncio import sleep
+from pytube import Search
 from Templates import *
 
 
@@ -27,20 +28,18 @@ bot = commands.Bot(command_prefix = settings['prefix'], intents=intents)
 server = None
 musical_queue = []
 
-
-
     #-------------------------------------------------------------hello------------------------------------
 @bot.command()
 async def hello(ctx):
         author = ctx.message.author
         check = ctx.message.content
         s = str(check)
-        s = check.replace('Smeat ', '', 1)
-        print(s)
+        s = check.replace('Smeat ', '', 1)      # создание текста сообщения рандомом
+        print(s)                                # Создание рамки, где ее цвет указывается в color, а текст в description
         hello_index = random.randrange(0, 14)
         hi = hello_phrases[hello_index]
-        await ctx.send(f'{hi}, {author.mention}!')
-
+        embed = discord.Embed(color=discord.Color.dark_red(), description=f'{hi}, {author.mention}!')
+        await ctx.send(embed=embed)
 
 @bot.command()
 async def руддщ(ctx):
@@ -51,10 +50,15 @@ async def руддщ(ctx):
         print(s)
         hello_index = random.randrange(0, 14)
         hi = hello_phrases[hello_index]
-        await ctx.send(f'{hi}, {author.mention}!')
+
+        embed = discord.Embed(color=discord.Color.dark_red(), description=f'{hi}, {author.mention}!')
+        await ctx.send(embed=embed)
+
         shiftAlt_index = random.randrange(0, len(shift_alt_phrase) - 1)
         shift = shift_alt_phrase[shiftAlt_index]
-        await ctx.send(shift)
+
+        embed = discord.Embed(color=discord.Color.dark_red(), description=f'{shift}')
+        await ctx.send(embed=embed)
     #----------------------------------------------------------------------------------------------------------
 
 
@@ -83,10 +87,28 @@ def play_music(ctx, url):
 
 
 @bot.command()
-async def play(ctx, url):
+async def play(ctx, url, p_r='', p_r1='', p_r2='', p_r3='', p_r4='', p_r5='', p_r6='', p_r7='', p_r8='', p_r9='', p_r10=''):
+
+        if 'https:' in url:
+            pass
+        else:
+            search_request = url + ' ' + p_r + ' ' + p_r1 + ' ' + p_r2 + ' ' + p_r3 + ' ' + p_r4 + ' ' +\
+                             p_r5 + ' ' + p_r6 + ' ' + p_r7 + ' ' + p_r8 + ' ' + p_r9 + ' ' + p_r10
+            s_request = Search(search_request)
+            for getting_url in s_request.results:
+                url = getting_url.watch_url
+                break
+
         global vc
         musical_queue.append(url)
         print(musical_queue)
+
+        embed = discord.Embed(color=discord.Color.dark_red(),
+                              description=f'Трек *тут может быть ваша реклама, пока я не прикрутил имена треков* находится на позиции {len(musical_queue)}',
+                              title='МУЗИКАЛ КВЕВЕ /"V"\ ')
+
+        await ctx.send(embed=embed)
+
         try:
             voice_channel = ctx.message.author.voice.channel
             vc = await voice_channel.connect()
@@ -104,10 +126,25 @@ async def play(ctx, url):
             musical_queue.pop(0)
 
 @bot.command()
-async def здфн(ctx, url):
+async def здфн(ctx, url, p_r='', p_r1='', p_r2='', p_r3='', p_r4='', p_r5='', p_r6='', p_r7='', p_r8='', p_r9='', p_r10=''):
+
+        shiftAlt_index = random.randrange(0, len(shift_alt_phrase) - 1)
+        shift = shift_alt_phrase[shiftAlt_index]
+        embed = discord.Embed(color=discord.Color.dark_red(), description=f'{shift}')
+        await ctx.send(embed=embed)
+
+        if 'https:' in url:
+            pass
+        else:
+            search_request = url + ' ' + p_r + ' ' + p_r1 + ' ' + p_r2 + ' ' + p_r3 + ' ' + p_r4 + ' ' +\
+                             p_r5 + ' ' + p_r6 + ' ' + p_r7 + ' ' + p_r8 + ' ' + p_r9 + ' ' + p_r10
+            s_request = Search(search_request)
+            for getting_url in s_request.results:
+                url = getting_url.watch_url
+                break
+
         global vc
         try:
-            await ctx.channel.send(f'И начинается наша вечерняя музыкальная программа с некого трека, название которого я еще не знаю, а мне собственно и до пизды!!')
             voice_channel = ctx.message.author.voice.channel
             vc = await voice_channel.connect()
         except:
@@ -115,7 +152,12 @@ async def здфн(ctx, url):
 
         musical_queue.append(url)
         print(musical_queue)
-        await ctx.channel.send(f'Трек находится на позиции {len(musical_queue) + 1}.')
+
+        embed = discord.Embed(color=discord.Color.dark_red(),
+                              description=f'Трек *тут может быть ваша реклама, пока я не прикрутил имена треков* находится на позиции {len(musical_queue)}',
+                              title='МУЗИКАЛ КВЕВЕ /"V"\ ')
+
+        await ctx.send(embed=embed)
 
         if vc.is_playing():
             while vc.is_playing():
@@ -163,6 +205,12 @@ async def leave(ctx):
 @bot.command()
 async def дуфму(ctx):
         global server
+
+        shiftAlt_index = random.randrange(0, len(shift_alt_phrase) - 1)
+        shift = shift_alt_phrase[shiftAlt_index]
+        embed = discord.Embed(color=discord.Color.dark_red(), description=f'{shift}')
+        await ctx.send(embed=embed)
+
         server = ctx.guild
         voice = discord.utils.get(bot.voice_clients, guild = server)
         if voice is None:
@@ -204,6 +252,12 @@ async def resume(ctx):
 @bot.command()
 async def куыгьу(ctx):
         global server
+
+        shiftAlt_index = random.randrange(0, len(shift_alt_phrase) - 1)
+        shift = shift_alt_phrase[shiftAlt_index]
+        embed = discord.Embed(color=discord.Color.dark_red(), description=f'{shift}')
+        await ctx.send(embed=embed)
+
         server = ctx.guild
         voice = discord.utils.get(bot.voice_clients, guild = server)
 
@@ -282,26 +336,14 @@ async def get_help(ctx):
         check = ctx.message.content
         hello_index = random.randrange(0, 14)
         hi = hello_phrases[hello_index]
-        await ctx.send(f'{hi}, {author.mention}!')
-        await ctx.send(f'Сейчас я расскажу тебе, что я умею на данный момент! ')
-        await ctx.send(f'Команда hello - я просто с тобой приветствуюсь(представь как все грустно, '
-                       f'что бы с тобой поздоровались тебе приходится командовать:))')
-        await ctx.send(f'Команда play - после команды через пробел вставь ссылку с ютуба и я сыграю аудиоряд с этой ссылке.')
-        await ctx.send(f'Команда repeat_song - если ты хочешь определённую песню заслушать до дыр, то аналогично команде выше использую эту команду.')
-        await ctx.send(f'Команда recharge - по сути эта команда нужна, что бы выключить бесконечное повторение трека. '
-                       f'Как говорил Сэм Винчестер "Песня хорошая, но не 50 раз подряд."')
-        await ctx.send(f'Команда add_song - по сути эта команда не приносит пользы, но она есть, так как мой создатель работает над плейлистами, '
-                       f'но еще не придумал как точно это будет выглядеть. По сути это просто наработка. ')
-        await ctx.send(f'Команда leave - если ты меня хочешь выгнать с канала, то используй эту команду. Но не переживай, ты из дискорда всё равно уйдешь раньше меня:).')
-        await ctx.send(f'Команда stop - если хочешь, что бы я остановил трек, который играет в данный момент, то используй эту команду.')
-        await ctx.send(f'Команда resume - для того, что бы продолжить воспроизведение остановленного трека')
-        await ctx.send(f'Команда volume - настрйока громкости меня, если конечно ползунок под моей аватаркой тебя не устраивает. '
-                       f'Просто введи число во сколько раз хочешь сделать меня громче. Но помни, число от 0 до 2,'
-                       f' где 0 - заткнуть меня вообще, 2 сделать в 2 раза громче. '
-                       f'.'
-                       f'.'
-                       f'p.s. от 0 до 1 я все равно становлюсь тише, так работает умножение.')
-        await ctx.send(f'Команда show - после этой команды ты можешь написать название животного на анлгийском и я скину тебе его фотку.')
+
+        embed = discord.Embed(color=discord.Color.dark_red(), description=f'{hi}, {author.mention}!')
+        await ctx.send(embed=embed)
+
+        embed = discord.Embed(color=discord.Color.dark_red(), description=get_help_txt, title='Сейчас я расскажу тебе, что я умею на данный момент!')
+        await ctx.send(embed=embed)
+
+
 
 
 
@@ -312,26 +354,17 @@ async def пуе_рудз(ctx):
         check = ctx.message.content
         hello_index = random.randrange(0, 14)
         hi = hello_phrases[hello_index]
-        await ctx.send(f'{hi}, {author.mention}!')
-        await ctx.send(f'Сейчас я расскажу тебе, что я умею на данный момент! ')
-        await ctx.send(f'Команда hello - я просто с тобой приветствуюсь(представь как все грустно, '
-                       f'что бы с тобой поздоровались тебе приходится командовать:))')
-        await ctx.send(f'Команда play - после команды через пробел вставь ссылку с ютуба и я сыграю аудиоряд с этой ссылки.')
-        await ctx.send(f'Команда repeat_song - если ты хочешь определённую песню заслушать до дыр, то аналогично команде выше используй эту команду.')
-        await ctx.send(f'Команда recharge - по сути эта команда нужна, что бы выключить бесконечное повторение трека. '
-                       f'Как говорил Сэм Винчестер "Песня хорошая, но не 50 раз подряд."')
-        await ctx.send(f'Команда add_song - по сути эта команда не приносит пользы, но она есть, так как мой создатель работает над плейлистами, '
-                       f'но еще не придумал как точно это будет выглядеть. По сути это просто наработка. ')
-        await ctx.send(f'Команда leave - если ты меня хочешь выгнать с канала, то используй эту команду. Но не переживай, ты из дискорда всё равно уйдешь раньше меня:).')
-        await ctx.send(f'Команда stop - если хочешь, что бы я остановил трек, который играет в данный момент, то используй эту команду.')
-        await ctx.send(f'Команда resume - для того, что бы продолжить воспроизведение остановленного трека')
-        await ctx.send(f'Команда volume - настрйока громкости меня, если конечно ползунок под моей аватаркой тебя не устраивает. '
-                       f'Просто введи число во сколько раз хочешь сделать меня громче. Но помни, число от 0 до 2,'
-                       f' где 0 - заткнуть меня вообще, 2 - сделать в 2 раза громче. '
-                       f'p.s. от 0 до 1 я все равно становлюсь тише, так работает умножение.')
-        await ctx.send(f'.')
-        await ctx.send(f'.')
-        await ctx.send(f'Команда show - после этой команды ты можешь написать название животного на анлгийском и я скину тебе его фотку.')
+
+        shiftAlt_index = random.randrange(0, len(shift_alt_phrase) - 1)
+        shift = shift_alt_phrase[shiftAlt_index]
+        embed = discord.Embed(color=discord.Color.dark_red(), description=f'{shift}')
+        await ctx.send(embed=embed)
+
+        embed = discord.Embed(color=discord.Color.dark_red(), description=f'{hi}, {author.mention}!')
+        await ctx.send(embed=embed)
+
+        embed = discord.Embed(color=discord.Color.dark_red(), description=get_help_txt, title='Сейчас я расскажу тебе, что я умею на данный момент!')
+        await ctx.send(embed=embed)
     #------------------------------------------------------------------------------------------------------------
 
 
