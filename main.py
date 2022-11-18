@@ -9,7 +9,7 @@ import random
 from youtube_dl import YoutubeDL
 import time
 from asyncio import sleep
-from pytube import Search
+from pytube import Search, YouTube
 from Templates import *
 
 
@@ -27,6 +27,8 @@ bot = commands.Bot(command_prefix = settings['prefix'], intents=intents)
 
 server = None
 musical_queue = []
+songs_titles = []
+
 
     #-------------------------------------------------------------hello------------------------------------
 @bot.command()
@@ -89,22 +91,27 @@ def play_music(ctx, url):
 @bot.command()
 async def play(ctx, url, p_r='', p_r1='', p_r2='', p_r3='', p_r4='', p_r5='', p_r6='', p_r7='', p_r8='', p_r9='', p_r10=''):
 
+        name = ''
+
         if 'https:' in url:
-            pass
+            yt = YouTube(url)
+            name = yt.title
         else:
             search_request = url + ' ' + p_r + ' ' + p_r1 + ' ' + p_r2 + ' ' + p_r3 + ' ' + p_r4 + ' ' +\
                              p_r5 + ' ' + p_r6 + ' ' + p_r7 + ' ' + p_r8 + ' ' + p_r9 + ' ' + p_r10
             s_request = Search(search_request)
             for getting_url in s_request.results:
                 url = getting_url.watch_url
+                name = getting_url.title
                 break
 
         global vc
         musical_queue.append(url)
+        songs_titles.append(name)
         print(musical_queue)
 
         embed = discord.Embed(color=discord.Color.dark_red(),
-                              description=f'Трек *тут может быть ваша реклама, пока я не прикрутил имена треков* находится на позиции {len(musical_queue)}',
+                              description=f'Трек {name} \nнаходится на позиции {len(musical_queue)}',
                               title='МУЗИКАЛ КВЕВЕ /"V"\ ')
 
         await ctx.send(embed=embed)
@@ -121,12 +128,16 @@ async def play(ctx, url, p_r='', p_r1='', p_r2='', p_r3='', p_r4='', p_r5='', p_
                 await sleep(1)
             play_music(ctx, musical_queue[0])
             musical_queue.pop(0)
+            songs_titles.pop(0)
         else:
             play_music(ctx, musical_queue[0])
             musical_queue.pop(0)
+            songs_titles.pop(0)
 
 @bot.command()
 async def здфн(ctx, url, p_r='', p_r1='', p_r2='', p_r3='', p_r4='', p_r5='', p_r6='', p_r7='', p_r8='', p_r9='', p_r10=''):
+
+        name = ''
 
         shiftAlt_index = random.randrange(0, len(shift_alt_phrase) - 1)
         shift = shift_alt_phrase[shiftAlt_index]
@@ -134,13 +145,15 @@ async def здфн(ctx, url, p_r='', p_r1='', p_r2='', p_r3='', p_r4='', p_r5=''
         await ctx.send(embed=embed)
 
         if 'https:' in url:
-            pass
+            yt = YouTube(url)
+            name = yt.title
         else:
             search_request = url + ' ' + p_r + ' ' + p_r1 + ' ' + p_r2 + ' ' + p_r3 + ' ' + p_r4 + ' ' +\
                              p_r5 + ' ' + p_r6 + ' ' + p_r7 + ' ' + p_r8 + ' ' + p_r9 + ' ' + p_r10
             s_request = Search(search_request)
             for getting_url in s_request.results:
                 url = getting_url.watch_url
+                name = getting_url.title
                 break
 
         global vc
@@ -151,10 +164,11 @@ async def здфн(ctx, url, p_r='', p_r1='', p_r2='', p_r3='', p_r4='', p_r5=''
             print('Уже подключен или не удалось подключиться')
 
         musical_queue.append(url)
+        songs_titles.append(name)
         print(musical_queue)
 
         embed = discord.Embed(color=discord.Color.dark_red(),
-                              description=f'Трек *тут может быть ваша реклама, пока я не прикрутил имена треков* находится на позиции {len(musical_queue)}',
+                              description=f'Трек {name} \nнаходится на позиции {len(musical_queue)}',
                               title='МУЗИКАЛ КВЕВЕ /"V"\ ')
 
         await ctx.send(embed=embed)
@@ -164,14 +178,29 @@ async def здфн(ctx, url, p_r='', p_r1='', p_r2='', p_r3='', p_r4='', p_r5=''
                 await sleep(1)
             play_music(ctx, musical_queue[0])
             musical_queue.pop(0)
+            songs_titles.pop(0)
             print(musical_queue)
         else:
             play_music(ctx, musical_queue[0])
             musical_queue.pop(0)
+            songs_titles.pop(0)
             print(musical_queue)
     #------------------------------------------------------------------------------------------------------------
 
+@bot.command()
+async def queue(ctx):
+    curr = 0
+    songs_list = ''
 
+    for song in songs_titles:
+        songs_list += f'{curr}. {str(song)} \n'
+        curr += 1
+
+    embed = discord.Embed(color=discord.Color.dark_red(),
+                          description=f'{songs_list}',
+                          title='Список треков в очереди:')
+
+    await ctx.send(embed=embed)
 
 
     #-----------------------------------------------recharge------------------------------------------------------
