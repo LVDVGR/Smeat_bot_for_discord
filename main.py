@@ -29,6 +29,7 @@ server = None
 musical_queue = []
 songs_titles = []
 
+
     #-------------------------------------------------------------hello------------------------------------
 @bot.command()
 async def hello(ctx):
