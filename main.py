@@ -9,12 +9,13 @@ import random
 from youtube_dl import YoutubeDL
 import time
 from asyncio import sleep
-from pytube import Search, YouTube
+from pytube import Search, YouTube, Playlist
 from Templates import *
 
 
 
 FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+
 YDL_OPTIONS = {'format': 'worstaudio/best', 'noplaylist': 'False', 'simulate': 'True',
                    'preferredquality': '192', 'preferredcodec': 'mp3', 'key': 'FFmpegExtractAudio'}
 
@@ -90,12 +91,25 @@ def play_music(ctx, url):
 
 @bot.command()
 async def play(ctx, url, p_r='', p_r1='', p_r2='', p_r3='', p_r4='', p_r5='', p_r6='', p_r7='', p_r8='', p_r9='', p_r10=''):
-
         name = ''
 
         if 'https:' in url:
-            yt = YouTube(url)
-            name = yt.title
+
+            try:
+                plist = Playlist(url)
+                for url_playlists in plist.video_urls:
+                    try:
+                        yt = YouTube(url_playlists)
+                        songs_titles.append(yt.title)
+                        musical_queue.append(url_playlists)
+                    except:
+                        print('lose')
+            except:
+                yt = YouTube(url)
+                songs_titles.append(yt.title)
+                musical_queue.append(url)
+
+
         else:
             search_request = url + ' ' + p_r + ' ' + p_r1 + ' ' + p_r2 + ' ' + p_r3 + ' ' + p_r4 + ' ' +\
                              p_r5 + ' ' + p_r6 + ' ' + p_r7 + ' ' + p_r8 + ' ' + p_r9 + ' ' + p_r10
@@ -103,15 +117,14 @@ async def play(ctx, url, p_r='', p_r1='', p_r2='', p_r3='', p_r4='', p_r5='', p_
             for getting_url in s_request.results:
                 url = getting_url.watch_url
                 name = getting_url.title
+                musical_queue.append(url)
+                songs_titles.append(name)
                 break
 
         global vc
-        musical_queue.append(url)
-        songs_titles.append(name)
-        print(musical_queue)
 
         embed = discord.Embed(color=discord.Color.dark_red(),
-                              description=f'Трек {name} \nнаходится на позиции {len(musical_queue)}',
+                              description=f'Трек {name} \nнаходится на позиции {len(musical_queue) + 1}',
                               title='МУЗИКАЛ КВЕВЕ /"V"\ ')
 
         await ctx.send(embed=embed)
@@ -122,17 +135,28 @@ async def play(ctx, url, p_r='', p_r1='', p_r2='', p_r3='', p_r4='', p_r5='', p_
         except:
             print('Уже подключен или не удалось подключиться')
 
-        if vc.is_playing():
-            ctx.message.author.voice.channel.connect()
-            while vc.is_playing():
-                await sleep(1)
-            play_music(ctx, musical_queue[0])
-            musical_queue.pop(0)
-            songs_titles.pop(0)
-        else:
-            play_music(ctx, musical_queue[0])
-            musical_queue.pop(0)
-            songs_titles.pop(0)
+
+        for temp in range (len(musical_queue)):
+            try:
+                if vc.is_playing():
+                    ctx.message.author.voice.channel.connect()
+                    while vc.is_playing():
+                        await sleep(1)
+                    play_music(ctx, musical_queue[0])
+
+                    embed = discord.Embed(color=discord.Color.dark_red(),
+                                          description=f'{songs_titles[0]}',
+                                          title='Сейчас играет /owo\ ')
+                    await ctx.send(embed=embed)
+
+                    musical_queue.pop(0)
+                    songs_titles.pop(0)
+                else:
+                    play_music(ctx, musical_queue[0])
+                    musical_queue.pop(0)
+                    songs_titles.pop(0)
+            except:
+                pass
 
 @bot.command()
 async def здфн(ctx, url, p_r='', p_r1='', p_r2='', p_r3='', p_r4='', p_r5='', p_r6='', p_r7='', p_r8='', p_r9='', p_r10=''):
@@ -168,7 +192,7 @@ async def здфн(ctx, url, p_r='', p_r1='', p_r2='', p_r3='', p_r4='', p_r5=''
         print(musical_queue)
 
         embed = discord.Embed(color=discord.Color.dark_red(),
-                              description=f'Трек {name} \nнаходится на позиции {len(musical_queue)}',
+                              description=f'Трек {name} \nнаходится на позиции {len(musical_queue) + 1}',
                               title='МУЗИКАЛ КВЕВЕ /"V"\ ')
 
         await ctx.send(embed=embed)
@@ -189,18 +213,20 @@ async def здфн(ctx, url, p_r='', p_r1='', p_r2='', p_r3='', p_r4='', p_r5=''
 
 @bot.command()
 async def queue(ctx):
-    curr = 0
+    curr = 1
     songs_list = ''
 
     for song in songs_titles:
         songs_list += f'{curr}. {str(song)} \n'
         curr += 1
 
-    embed = discord.Embed(color=discord.Color.dark_red(),
-                          description=f'{songs_list}',
-                          title='Список треков в очереди:')
-
-    await ctx.send(embed=embed)
+    # embed = discord.Embed(color=discord.Color.dark_red(),
+    #                       description=f'{songs_list}',
+    #                       title='Список треков в очереди:')
+    #
+    # await ctx.send(embed=embed)
+    await ctx.send('Cписок треков(большая рамочка не вывозит большие списки, но я это исправлю!!)')
+    await ctx.send(songs_list)
 
 
     #-----------------------------------------------recharge------------------------------------------------------
